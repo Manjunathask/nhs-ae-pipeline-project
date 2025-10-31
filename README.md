@@ -1,7 +1,6 @@
-#A&E Performance & Patient Flow Bottleneck Analysis
+A&E Performance & Patient Flow Bottleneck Analysis
 
-
-##Project Objective: To build an automated, end-to-end BI solution that:
+Project Objective: To build an automated, end-to-end BI solution that:
 
 Ingests and simulates raw patient-level data into a Bronze Layer.
 
@@ -11,7 +10,7 @@ Models the data into a Star Schema in a Gold Layer for analytics.
 
 Identifies the "Decision to Admit" (DTA) bottleneck and correlates it with hospital-wide bed occupancy
 
-##Core Business Questions:
+Core Business Questions:
 
 What is the average time spent in each stage of the A&E patient journey?
 
@@ -21,7 +20,7 @@ Is there a statistical correlation between hospital-wide ward occupancy % and th
 
 How does our performance on the "4-Hour Target" change by time of day and day of week?
 
-##Technology Stack:
+Technology Stack:
 
 Architecture: Medallion Architecture (Bronze, Silver, Gold)
 
