@@ -2,7 +2,6 @@ USE [NHS_A_E_Warehouse];
 GO
 
 -- Table for raw patient journey data (from simulated EPR)
--- Note: Table is created in the [bronze] schema
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[bronze].[Patient_AE_Journeys]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [bronze].[Patient_AE_Journeys](

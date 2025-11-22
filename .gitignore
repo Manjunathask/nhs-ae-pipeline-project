@@ -1,0 +1,38 @@
+# ---------------------------------------
+# 1. Security (CRITICAL)
+# ---------------------------------------
+.env
+.env.*
+airflow.cfg
+unittests.cfg
+
+# ---------------------------------------
+# 2. Airflow Runtime Files
+# ---------------------------------------
+# Logs generate thousands of files, do not commit them
+logs/
+# PID files are temporary system files
+airflow-webserver.pid
+standalone_admin_password.txt
+webserver_config.py
+
+# ---------------------------------------
+# 3. Python & System Junk
+# ---------------------------------------
+# Bytecode (compiled python)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments (if you created one locally)
+venv/
+.venv/
+env/
+
+# IDE Settings (VS Code, PyCharm)
+.vscode/
+.idea/
+
+# Mac OS Metadata
+.DS_Store

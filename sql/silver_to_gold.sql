@@ -1,0 +1,1 @@
+EXEC [gold].[sp_Load_Fact_PatientJourney_Incremental];

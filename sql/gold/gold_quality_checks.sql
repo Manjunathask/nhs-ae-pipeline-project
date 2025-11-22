@@ -3,7 +3,7 @@ GO
 
 PRINT 'Running Gold Layer DQ Checks...';
 
--- Check 1: Fact table foreign keys should not be NULL (e.g., Arrival_DateKey)
+-- Check 1: Fact table foreign keys should not be NULL
 IF EXISTS (
     SELECT 1 FROM [gold].[Fact_PatientJourney]
     WHERE [Arrival_DateKey] IS NULL

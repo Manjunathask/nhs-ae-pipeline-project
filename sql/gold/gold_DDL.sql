@@ -2,7 +2,6 @@ USE [NHS_A_E_Warehouse];
 GO
 
 -- Dimension Table for Date
--- Note: Table is created in the [gold] schema
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[gold].[Dim_Date]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [gold].[Dim_Date](

@@ -1,17 +1,8 @@
-import pyodbc
 import random
 from datetime import datetime, timedelta
 import uuid
-
-# Connection details - update as needed
-conn = pyodbc.connect(
-    'DRIVER={ODBC Driver 18 for SQL Server};'
-    'SERVER=ASUS_MANJUNATHA\\SQLEXPRESS;'
-    'DATABASE=NHS_A_E_Warehouse;'
-    'Trusted_Connection=yes;'
-    'TrustServerCertificate=yes;'
-)
-cursor = conn.cursor()
+from airflow.providers.odbc.hooks.odbc import OdbcHook
+import sys
 
 def random_datetime(base, min_offset=0, max_offset=120):
     """Generate a random datetime offset from a base datetime in minutes."""
@@ -26,8 +17,9 @@ def generate_patient_ae_record():
     ward_admit = random_datetime(admit_dec, 5, 20)
     discharge = random_datetime(ward_admit, 60, 300)
     reasons = ['Treated', 'Admitted', 'Transferred', 'Left', 'Other']
-    # Guarantee patient ID uniqueness using UUID4
+    
     patient_id = str(uuid.uuid4())
+    
     record = (
         patient_id,
         arrival,
@@ -43,21 +35,46 @@ def generate_patient_ae_record():
     return record
 
 def insert_patient_ae(n=10):
-    """Insert n generated patient journey records into the database."""
+    """Insert n generated patient journey records into the database using Airflow Hook."""
+    
+    # ---------------------------------------------------------
+    # Explicitly pass the driver here.
+    # This bypasses the security restriction on the 'Extra' field.
+    # ---------------------------------------------------------
+    hook = OdbcHook(
+        odbc_conn_id='mssql_local', 
+        driver='ODBC Driver 18 for SQL Server'
+    )
+    
+    conn = hook.get_conn()
+    cursor = conn.cursor()
+    
     count = 0
-    for _ in range(n):
-        rec = generate_patient_ae_record()
-        cursor.execute("""
-        INSERT INTO bronze.Patient_AE_Journeys
-        (PatientID, Arrival_Timestamp, Triage_Timestamp, SeenByDoctor_Timestamp, DecisionToAdmit_Timestamp,
-         WardAdmission_Timestamp, Discharge_Timestamp, Discharge_Reason, CurrentLocation, IngestionTimestamp)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, rec)
-        count += 1
-    conn.commit()
-    print(f"Inserted {count} records.")
+    print(f"Starting insertion of {n} records...")
 
-insert_patient_ae(20)
+    try:
+        for _ in range(n):
+            rec = generate_patient_ae_record()
+            
+            cursor.execute("""
+            INSERT INTO bronze.Patient_AE_Journeys
+            (PatientID, Arrival_Timestamp, Triage_Timestamp, SeenByDoctor_Timestamp, DecisionToAdmit_Timestamp, 
+             WardAdmission_Timestamp, Discharge_Timestamp, Discharge_Reason, CurrentLocation, IngestionTimestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, rec)
+            count += 1
+        
+        conn.commit()
+        print(f"Successfully inserted {count} records.")
+        
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+        raise
+        
+    finally:
+        cursor.close()
+        conn.close()
 
-cursor.close()
-conn.close()
+if __name__ == "__main__":
+    insert_patient_ae(20)

@@ -1,4 +1,4 @@
--- List all your CSV file names here (just the file names, not full paths)
+-- List all your CSV file names here
 DECLARE @Files TABLE (FileName NVARCHAR(255));
 INSERT INTO @Files (FileName)
 VALUES
@@ -9,9 +9,9 @@ VALUES
     ('Monthly-AE-May-2025.csv'),
     ('September-2025-Csv-7hjr2.csv');  -- Add or remove lines as needed
 
--- Folder path (update this once)
+-- Folder path 
 DECLARE @FolderPath NVARCHAR(500) = 
-    'C:\Users\skman\Pictures\UK masters\Data Science\Projects\NHS\Data Source CSV\';
+    'C:\Users\skman\Pictures\UK masters\Data Science\Projects\NHS\Data Source CSV\'; ---Place your path here
 
 -- Variables for looping
 DECLARE @FileName NVARCHAR(255);
@@ -47,4 +47,4 @@ END
 CLOSE file_cursor;
 DEALLOCATE file_cursor;
 
-SELECT * FROM bronze.External_Benchmarks
+--SELECT * FROM bronze.External_Benchmarks
