@@ -112,7 +112,7 @@ The system is built on the **Medallion Architecture** principle:
 I am currently open to Data/Analytics Engineering opportunities. Feel free to reach out!
 
 * **Name:** Manjunatha S K
-* **LinkedIn:** [linkedin.com/in/your-profile-url](https://www.linkedin.com/in/manjunatha-s-k/)
+* **LinkedIn:** [linkedin.com/in/manjunatha-s-kl](https://www.linkedin.com/in/manjunatha-s-k/)
 * **Email:** [skmanjunath16@gmail.com](mailto:skmanjunath16@gmail.com)
 
 ---
