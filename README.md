@@ -1,35 +1,119 @@
-A&E Performance & Patient Flow Bottleneck Analysis
+# 🏥 NHS A&E Data Pipeline: End-to-End Medallion Architecture
 
-Project Objective: To build an automated, end-to-end BI solution that:
+![Build Status](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge&logo=github)
+![Airflow](https://img.shields.io/badge/Orchestration-Apache%20Airflow-blue?style=for-the-badge&logo=apache-airflow)
+![Docker](https://img.shields.io/badge/Container-Docker-2496ED?style=for-the-badge&logo=docker)
+![SQL Server](https://img.shields.io/badge/Database-MSSQL-CC2927?style=for-the-badge&logo=microsoft-sql-server)
+![Python](https://img.shields.io/badge/Code-Python_3.12-3776AB?style=for-the-badge&logo=python)
 
-Ingests and simulates raw patient-level data into a Bronze Layer.
+> **A robust, containerized ETL pipeline simulating and processing NHS Accident & Emergency patient data through a Bronze-Silver-Gold architecture.**
 
-Cleans, transforms, and enriches this data in a Silver Layer.
+---
 
-Models the data into a Star Schema in a Gold Layer for analytics.
+## 📖 Project Overview
 
-Identifies the "Decision to Admit" (DTA) bottleneck and correlates it with hospital-wide bed occupancy
+This project demonstrates a complete Data Engineering solution designed to model the flow of patients through an NHS A&E department. It generates realistic synthetic data, orchestrates ingestion via **Apache Airflow**, and transforms data using **Microsoft SQL Server** to track critical KPIs like **Wait Times** and **Ward Occupancy**.
 
-Core Business Questions:
+The system is built on the **Medallion Architecture** principle:
+* **Bronze:** Raw data ingestion (simulated external benchmarks & internal systems).
+* **Silver:** Cleaned, deduplicated, and enriched data (handling Upserts & Schema validation).
+* **Gold:** Business-ready aggregations and Star Schema for reporting.
 
-What is the average time spent in each stage of the A&E patient journey?
+---
 
-Which stage is the primary bottleneck?
+## 🏗️ Architecture
 
-Is there a statistical correlation between hospital-wide ward occupancy % and the DTA-to-Ward wait time?
+![Architecture Diagram](./assets/high_level_architecture.png)
 
-How does our performance on the "4-Hour Target" change by time of day and day of week?
+### The Workflow
+1.  **Ingestion (Bronze):** Custom Python scripts simulate live hospital systems, generating patient arrivals and ward census data.
+2.  **Orchestration:** Airflow DAGs (scheduled `@hourly`) trigger extraction and loading into MS SQL Server using the **ODBC Driver 18**.
+3.  **Transformation (Silver):**
+    * SQL `MERGE` statements handle data deduplication (Upserts).
+    * Complex logic calculates durations (Arrival $\to$ Triage $\to$ Doctor).
+    * Data is enriched with real-time Ward Occupancy snapshots.
+4.  **Serving (Gold):** Optimized Fact and Dimension tables ready for visualization.
 
-Technology Stack:
+---
 
-Architecture: Medallion Architecture (Bronze, Silver, Gold)
+## 🛠️ Tech Stack
 
-Database: SQL Server
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Containerization** | Docker & Docker Compose | Custom image build with MS ODBC Drivers & System dependencies. |
+| **Orchestration** | Apache Airflow 3.1.3 | DAGs managing dependencies, retries, and Python/SQL tasks. |
+| **Database** | Microsoft SQL Server | T-SQL for storage and transformation procedures. |
+| **Language** | Python 3.12 | Data simulation, `OdbcHook` connectivity, and DAG definition. |
+| **Driver** | MS ODBC Driver 18 | Linux-compatible driver for SQL Server connectivity. |
 
-Data Modeling: T-SQL (Stored Procedures, Schema Creation)
+---
 
-ETL: Python (Pandas, SQLAlchemy/pyodbc)
+## 🚀 Key Features (Version 1.0)
 
-Orchestration: Apache Airflow
+* **Dockerized Airflow Environment:** A custom `Dockerfile` that extends the official Airflow image to include system-level dependencies (`unixodbc`) and the Microsoft ODBC Driver 18, solving common Linux-to-MSSQL connectivity challenges.
+* **Production-Grade Connectivity:** Implements `OdbcHook` with properly configured connection strings (TrustServerCertificate/Encrypt) to bypass default security blocks.
+* **Robust SQL Logic:** Utilizes T-SQL `MERGE` for idempotent operations—ensuring that re-running the pipeline doesn't create duplicate data.
+* **Dynamic Configuration:** Uses Environment Variables for `PYTHONPATH` and Connection settings, keeping the codebase clean and modular.
 
-Visualization: Power BI (Power Query, DAX)
+---
+
+## 📂 Project Structure
+
+```bash
+├── dags/
+│   └── ae_medallion_pipeline_dag.py  # Main orchestration logic
+├── python_scripts/
+│   ├── patient_ae_journey.py         # Data simulator for patient flow
+│   └── ward_occupancy.py             # Data simulator for ward census
+├── sql/
+│   ├── bronze_to_silver.sql          # T-SQL transformations
+│   └── silver_to_gold.sql            # Aggregation logic
+├── assets/
+│   └── architecture_diagram.png      # Visualization
+├── Dockerfile                        # Custom image build
+├── docker-compose.yaml               # Service definitions
+└── requirements.txt                  # Python dependencies
+```
+## 🗺️ Roadmap
+
+### ✅ v1.0: Backend Core (Completed)
+* [x] Docker environment setup with MS SQL connectivity.
+* [x] Python Simulation scripts for Patient Journey & Ward Occupancy.
+* [x] Airflow DAGs for Bronze $\to$ Silver $\to$ Gold pipeline.
+* [x] T-SQL transformation logic implementation.
+
+### 🚧 v1.1: Analytics Integration (Coming Soon)
+* [ ] Connect Power BI Service to the Gold Layer.
+* [ ] Develop **Wait Time vs. Occupancy** Dashboard.
+* [ ] Implement Airflow `PowerBIDatasetRefreshOperator` to trigger dashboard updates immediately after ETL completion.
+
+---
+
+## 💻 How to Run Locally
+
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/Manjunathask/nhs-ae-pipeline-project.git
+    cd nhs-ae-pipeline
+    ```
+
+2.  **Build & Start**
+    ```bash
+    docker compose up -d --build
+    ```
+
+3.  **Access Airflow**
+    Navigate to `http://localhost:8080` and trigger the `nhs_ae_etl_pipeline` DAG.
+
+---
+
+## 📬 Contact
+
+I am currently open to Data/Analytics Engineering opportunities. Feel free to reach out!
+
+* **Name:** Manjunatha S K
+* **LinkedIn:** [linkedin.com/in/manjunatha-s-kl](https://www.linkedin.com/in/manjunatha-s-k/)
+* **Email:** [skmanjunath16@gmail.com](mailto:skmanjunath16@gmail.com)
+
+---
+*Project Version: 1.0 | Last Updated: Nov 2025*
