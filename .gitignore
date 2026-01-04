@@ -25,7 +25,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Virtual Environments (if you created one locally)
+# Virtual Environments 
 venv/
 .venv/
 env/
@@ -33,6 +33,3 @@ env/
 # IDE Settings (VS Code, PyCharm)
 .vscode/
 .idea/
-
-# Mac OS Metadata
-.DS_Store
